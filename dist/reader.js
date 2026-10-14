@@ -10,7 +10,8 @@
   function attach(root) {
     let reader = readers.get(root);
     if (reader && root.contains(reader.viewport)) return reader;
-    const previousPage = reader?.page || 0;
+    const previousPage = root.dataset.folioStart === undefined ? (reader?.page || 0) : Number(root.dataset.folioStart);
+    delete root.dataset.folioStart;
     const content = document.createElement('div');
     content.className = 'folio-content';
     while (root.firstChild) content.append(root.firstChild);
@@ -52,6 +53,7 @@
   }
   function show(r, page) {
     r.page = Math.max(0, Math.min(r.count - 1, page));
+    r.root.dataset.folioPage = String(r.page);
     const transform = `translateX(${-r.page * (r.width + 24)}px)`;
     if (r.content.style.transform !== transform) r.content.style.transform = transform;
     const text = `${r.page + 1} / ${r.count}`;
