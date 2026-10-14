@@ -1,6 +1,6 @@
 const Game = (()=>{
 const D=typeof HISUI!=='undefined'?HISUI:require('./data.js');
-const initial=()=>({version:2,actions:[],comparisons:[],turn:0,started:false,ended:false,trust:Array(16).fill(2),evidence:[],keys:['ren','miho','reika','key','fork','unlock','hunger','diet','steal','test','room','garden','magic'],seen:[],history:[],rumors:[],notes:'',result:null});
+const initial=()=>({version:2,actions:[],comparisons:[],turn:0,started:false,ended:false,trust:Array(16).fill(2),evidence:[],keys:['ren','miho','reika','key','fork','unlock','hunger','diet','steal','test','room','garden','magic'],seen:[],history:[],rumors:[],notes:'',result:null,tutorialDone:false});
 const has=(s,id)=>s.evidence.includes(id);
 const relation=(a,b)=>D.people[a].good===D.people[b].name?'good':D.people[a].bad===D.people[b].name?'bad':'neutral';
 const chapter=s=>Math.min(5,Math.floor(s.turn/5));
@@ -63,7 +63,7 @@ if(st.turn!==raw.turn||JSON.stringify(st.history.map(h=>[h.a,h.b,h.topic,h.appro
 for(const h of raw.history)talk(st,h);
 for(const rule of comparisons)if(rule.min<=st.turn&&rule.req.every(e=>has(st,e))&&rule.keys.every(k=>Array.isArray(raw.keys)&&raw.keys.includes(k)))compare(st,rule.pair);
 }
-st.notes=raw.notes;
+st.notes=raw.notes;st.tutorialDone=raw.tutorialDone===undefined?Boolean(raw.history.length||raw.ended):raw.tutorialDone===true;
 if(raw.ended){if(!raw.result||!Array.isArray(raw.result.answer)||raw.result.answer.length!==6||!Array.isArray(raw.result.proofs)||raw.result.proofs.length!==3||raw.result.answer.some(k=>k&&!D.K[k])||raw.result.proofs.some(k=>k&&!D.E[k]))throw Error('結果の形式が異なります。');assess(st,raw.result.answer,raw.result.proofs);}return st;
 }
 return {D,dialogueChoices,comparisons,compare,knownRelation,initial,has,relation,chapter,available,hint,talk,assess,slots,proofSlots,sentence,solution,ending,hydrate};
