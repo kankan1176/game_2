@@ -94,6 +94,15 @@
   new ResizeObserver(layoutSoon).observe(document.querySelector('#app'));
   window.addEventListener('resize', layoutSoon);
   document.addEventListener('click', layoutSoon);
+  document.addEventListener('folio:reveal', event => {
+    layout();
+    const target = document.querySelector(event.detail.selector);
+    const root = target?.closest('.folio');
+    const r = readers.get(root);
+    if (!target || !r || !r.width) return;
+    const x = target.getBoundingClientRect().left - r.viewport.getBoundingClientRect().left;
+    show(r, r.page + Math.floor((x + 1) / (r.width + 24)));
+  });
   document.fonts.ready.then(layoutSoon);
   layoutSoon();
 })();
